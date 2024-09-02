@@ -7,35 +7,25 @@
 ```
 grep -o '^[^:]*' /etc/passwd | sort
 ```
-Результат: 
+![image](https://github.com/user-attachments/assets/afaf371f-97b3-48a6-8cc5-f3977dd0c26d)
+
+
+## Задача 2
+
+Вывести данные /etc/protocols в отформатированном и отсортированном порядке для 5 наибольших портов, как показано в примере ниже:
+
 ```
-adm
-at
-bin
-cron
-cyrus
-daemon
-dhcp
-ftp
-games
-guest
-halt
-lp
-mail
-man
-news
-nobody
-ntp
-operator
-postmaster
-root
-shutdown
-smmsp
-squid
-sshd
-svn
-sync
-uucp
-vpopmail
-xfs
+[root@localhost etc]# cat /etc/protocols ...
+142 rohc
+141 wesp
+140 shim6
+139 hip
+138 manet
 ```
+
+Решение:
+```
+cat /etc/protocols | awk '{print $2, $1}' | sort -nr | head -n 5
+```
+![image](https://github.com/user-attachments/assets/8cff1223-52e6-4075-9392-d40807e7fe57)
+
