@@ -80,3 +80,44 @@ grep -o '\b[_A-Za-z][_A-Za-z0-9]*\b' hello.cpp | sort | uniq
 ```
 ![image](https://github.com/user-attachments/assets/7944c18e-b95c-4060-9bc5-e8cdd2149b59)
 
+## Задача 5
+
+Написать программу для регистрации пользовательской команды (правильные права доступа и копирование в /usr/local/bin).
+
+Например, пусть программа называется reg:
+
+```
+./reg banner
+```
+
+В результате для banner задаются правильные права доступа и сам banner копируется в /usr/local/bin.
+
+Решение:
+```bash
+#!/bin/bash
+
+chmod 755 "$1"
+sudo cp "$1" /usr/local/bin/
+
+```
+![image](https://github.com/user-attachments/assets/9a0badb0-4b36-40fd-940c-c9df3eeeed2e)
+
+
+## Задача 6
+
+Написать программу для проверки наличия комментария в первой строке файлов с расширением c, js и py.
+
+Решение:
+```bash
+for file in "$@"; do
+  if [[ "$file" =~ \.(c|js|py)$ ]]; then
+    first_line=$(head -n 1 "$file")
+    if [[ "$first_line" =~ ^\/[*\/]{1}|#|\'{3} ]]; then
+  echo "$file has a comment in the first line."
+    else
+      echo "$file doesn't have a comment in the first line."
+    fi
+  fi
+done
+```
+![image](https://github.com/user-attachments/assets/e49f5d31-81df-46b7-b417-781938001dd0)
