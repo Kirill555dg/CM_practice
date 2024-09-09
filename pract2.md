@@ -26,7 +26,8 @@
 
 Решить на MiniZinc задачу о зависимостях пакетов для рисунка, приведенного ниже.
 
-![](images/pubgrub.png)
+![image](https://github.com/user-attachments/assets/3d0b5c4c-b8fa-419e-a6f3-8d797e1404ae)
+
 
 ## Задача 6
 
