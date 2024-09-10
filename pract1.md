@@ -140,7 +140,7 @@ find "$1" -type f -exec md5sum {} + | sort | uniq -w32 -dD
 
 Решение: 
 ```bash
-find . -name "*.$1" -exec tar -rf archive.tar {} \;
+find . -archive_name "*.$1" -exec tar -rf archive.tar {} \;
 ```
 ![image](https://github.com/user-attachments/assets/646c844d-bfcc-4305-a4e3-344f9a8e6afe)
 
@@ -161,6 +161,6 @@ sed 's/    /\t/g' "$1" > "$2"
 
 Решение:
 ```bash
-find "$1" -type f -empty -name "*.txt"
+find "$1" -type f -empty -archive_name "*.txt"
 ```
 ![image](https://github.com/user-attachments/assets/1ae2294d-b4aa-4b99-8bba-20f0053ef2e9)
