@@ -140,7 +140,7 @@ find "$1" -type f -exec md5sum {} + | sort | uniq -w32 -dD
 
 Решение: 
 ```bash
-find . -name "*.$1" -print0 | tar -czvf archive.tar.gz --null -T -
+find . -name "*.$1" -exec tar -rf archive.tar {} \;
 ```
 ![image](https://github.com/user-attachments/assets/646c844d-bfcc-4305-a4e3-344f9a8e6afe)
 
