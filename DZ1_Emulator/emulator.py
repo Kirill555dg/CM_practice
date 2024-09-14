@@ -101,7 +101,8 @@ def read_config_file():
         return archive_path,log_file_path,start_script_path
 
 def execute_terminal(paths):
-    terminal = Terminal(paths)
+    terminal = Terminal(*paths)
+    terminal.running()
 
 if __name__ == "__main__":
     paths = read_config_file()
