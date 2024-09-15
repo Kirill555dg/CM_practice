@@ -1,39 +1,9 @@
-import os
 import tarfile
 import xml.etree.ElementTree
 import getpass
 import platform
 
 from datetime import datetime
-
-
-#def make_tar_archive():
-#    with tarfile.open(archive_name, 'w') as tar:
-#        tar.add("root", os.path.basename("root"))
-#
-#
-#def add_files_tar_archive():
-#    with tarfile.open(archive_name, 'a') as f:
-#        # f.makedir(f.tarinfo(), 'text/')
-#        f.add('text.txt', 'text/supertext/text.txt')
-#        # t = tarfile.TarInfo('mydir')
-#        # t.type = tarfile.DIRTYPE
-#        # f.addfile(t)
-#        # f.add('newdir', 'newdir')
-#
-#
-#def read_tar_archive():
-#    if tarfile.is_tarfile(archive_name):
-#        print('Архив найден')
-#        with tarfile.open(archive_name, 'r') as f:
-#            print('Файлы в архиве:')
-#            f.list()
-#            print("Members:")
-#            f.getmembers()
-#            print("Names:")
-#            f.getnames()
-
-
 
 
 class Terminal:
@@ -44,7 +14,7 @@ class Terminal:
         self.log_file_path = log_file_path
         self.start_script_path = start_script_path
 
-        self.current_directory = ''
+        self.working_directory = ''
         self.user = getpass.getuser()
         self.hostname = platform.node()
 
@@ -54,7 +24,8 @@ class Terminal:
     def run(self):
         self.running = True
         while self.running:
-            info = f'{self.user}@{self.hostname}:~{self.current_directory}$ '
+            dir = '/' + self.working_directory if self.working_directory else ''
+            info = f'{self.user}@{self.hostname}:~{dir}$ '
             command = input(info).strip()
             if len(command) > 0:
                 self.parse_cmd(command)
@@ -88,30 +59,109 @@ class Terminal:
         else:
             print(f"Command '{prmtrs[0]}' not found.")
 
+    def find_path(self, path):
+        current_path = self.working_directory
+
+        path = path.split('/')
+        if path[0] == '':
+            path[0] = '.'
+        if path[-1] == '':
+            path.pop(-1)
+
+        while path:
+            name = path.pop(0)
+            if name == '.':
+                current_path = self.working_directory
+            elif name == '..':
+                index = current_path.rfind('/')
+                if index > -1:
+                    current_path = current_path[:index]
+                else:
+                    current_path = ''
+            else:
+                if current_path:
+                    current_path += '/' + name
+                else:
+                    current_path += name
+                with tarfile.open(self.archive_path, 'r') as tar:
+                    paths = [member.name for member in tar]
+                    if current_path not in paths:
+                        return None
+        return current_path
+
     def ls(self, prmtrs):
-        directory = self.current_directory
-        if len(prmtrs) > 0:
-            directory = self.cd(prmtrs)
-            if not directory:
+        if len(prmtrs) > 1:
+            prmtrs.sort()
+            while prmtrs:
+                directory = self.find_path(prmtrs[0])
+                name = prmtrs.pop(0)
+                if directory is None:
+                    print(f"ls: cannot access '{name}': No such file or directory")
+                    continue
+
+                print(f'{name}:')
+                print(*self.ls_names(directory))
+                print()
+
+            return
+
+        directory = self.working_directory
+        if len(prmtrs) == 1:
+            directory = self.find_path(prmtrs[0])
+            if directory is None:
+                print(f"ls: cannot access '{prmtrs[0]}': No such file or directory")
                 return
 
-        with tarfile.open(self.archive_path, 'r') as archive:
-            names = set()
-            for member in archive:
+        names = self.ls_names(directory)
+        if names:
+            print(*names)
+
+    def ls_names(self, directory):
+        names = set()
+        with tarfile.open(self.archive_path, 'r') as tar:
+            for member in tar:
                 name = member.name
-                if name.rfind(directory) > -1:
+                if name.find(directory) > -1:
+                    if name == directory:
+                        if member.type == tarfile.DIRTYPE:
+                            continue
+                        return (directory[directory.rfind('/')+1:],)
+
                     name = name[len(directory):]
+                    if name[0] == '/':
+                        name = name[1:]
                     erase = name.find('/')
                     if erase > -1:
                         name = name[:name.find('/')]
                     names.add(name)
-            print(*names)
-
-
+        return names
 
     def cd(self, prmtrs):
+        if not prmtrs:
+            self.working_directory = ''
+            return
 
-        pass
+        if len(prmtrs) > 1:
+            print("cd: too many arguments")
+            return
+
+        new_directory = self.find_path(prmtrs[0])
+        if new_directory is None:
+            print(f"cd: {prmtrs[0]}: No such file or directory")
+            return
+        if new_directory == '':
+            self.working_directory = new_directory
+            return
+
+        with tarfile.open(self.archive_path, 'r') as tar:
+            for member in tar:
+                if member.name == new_directory:
+                    if member.type != tarfile.DIRTYPE:
+                        print(f"cd: {prmtrs[0]}: Not a directory")
+                        return
+                    self.working_directory = new_directory
+                    return
+
 
     def rev(self, prmtrs):
         pass
