@@ -64,7 +64,8 @@ class Terminal:
 
         path = path.split('/')
         if path[0] == '':
-            path[0] = '.'
+            current_path = ''
+            path.pop(0)
         if path[-1] == '':
             path.pop(-1)
 
@@ -164,9 +165,15 @@ class Terminal:
 
 
     def rev(self, prmtrs):
+
+
+
         pass
 
     def find(self, prmtrs):
+
+
+
         pass
 
     def date(self, prmtrs):
