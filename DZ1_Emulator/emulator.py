@@ -1,45 +1,9 @@
-import os.path
-import sys
 import tarfile
-import os.path
 import csv
-import xml
+
 from os.path import exists
-
 from sys import argv
-
-from DZ1_Emulator.terminal import Terminal
 from terminal import Terminal
-
-archive_name = 'archive.tar'
-
-
-def make_tar_archive():
-    with tarfile.open(archive_name, 'w') as tar:
-        tar.add("root", os.path.basename("root"))
-
-
-def add_files_tar_archive():
-    with tarfile.open(archive_name, 'a') as f:
-        # f.makedir(f.tarinfo(), 'text/')
-        f.add('text.txt', 'text/supertext/text.txt')
-        # t = tarfile.TarInfo('mydir')
-        # t.type = tarfile.DIRTYPE
-        # f.addfile(t)
-        # f.add('newdir', 'newdir')
-
-
-def read_tar_archive():
-    if tarfile.is_tarfile(archive_name):
-        print('Архив найден')
-        with tarfile.open(archive_name, 'r') as f:
-            print('Файлы в архиве:')
-            f.list()
-            print("Members:")
-            f.getmembers()
-            print("Names:")
-            f.getnames()
-
 
 def read_config_file():
     if len(argv) < 2:
@@ -100,11 +64,11 @@ def read_config_file():
 
         return archive_path,log_file_path,start_script_path
 
-def execute_terminal(paths):
-    terminal = Terminal(*paths)
-    terminal.running()
+def execute_terminal(archive_path, log_file_path, start_script_path):
+    terminal = Terminal(archive_path, log_file_path, start_script_path)
+    terminal.run()
 
 if __name__ == "__main__":
     paths = read_config_file()
-    execute_terminal(paths)
+    execute_terminal(*paths)
 
