@@ -60,52 +60,52 @@ class Terminal:
                     self.parse_cmd(command.strip())
 
     def parse_cmd(self, command):
-        prmts = command.split()
-        if prmts[0] == 'exit':
+        prmtrs = command.split()
+        if prmtrs[0] == 'exit':
             self.running = False
             return
-        elif prmts[0] == 'ls':
-            self.ls(prmts[1:])
-        elif prmts[0] == 'cd':
-            self.cd(prmts[1:])
-        elif prmts[0] == 'rev':
-            self.rev(prmts[1:])
-        elif prmts[0] == 'find':
-            self.find(prmts[1:])
-        elif prmts[0] == 'date':
-            self.date(prmts[1:])
+        elif prmtrs[0] == 'ls':
+            self.ls(prmtrs[1:])
+        elif prmtrs[0] == 'cd':
+            self.cd(prmtrs[1:])
+        elif prmtrs[0] == 'rev':
+            self.rev(prmtrs[1:])
+        elif prmtrs[0] == 'find':
+            self.find(prmtrs[1:])
+        elif prmtrs[0] == 'date':
+            self.date(prmtrs[1:])
 
-    def ls(self, prmts):
+    def ls(self, prmtrs):
         pass
 
-    def cd(self, prmts):
+    def cd(self, prmtrs):
         pass
 
-    def rev(self, prmts):
+    def rev(self, prmtrs):
         pass
 
-    def find(self, prmts):
+    def find(self, prmtrs):
         pass
 
-    def date(self, prmts):
-        if not prmts:
+    def date(self, prmtrs):
+        if not prmtrs:
             delta = datetime.now() - self.past_time
             self.system_date += delta
             self.past_time = datetime.now()
             print(self.system_date.ctime())
             return
 
-        if len(prmts) > 1:
-            print(f"date: extra operand ‘{prmts[1]}’")
+        if len(prmtrs) > 1:
+            print(f"date: extra operand ‘{prmtrs[1]}’")
             return
 
-        if len(prmts[0]) < 8:
-            print(f"date: invalid date ‘{prmts[0]}’")
+        if len(prmtrs[0]) < 8:
+            print(f"date: invalid date ‘{prmtrs[0]}’")
             return
 
-        MM,DD,hh,mm = prmts[0][:2],prmts[0][2:4],prmts[0][4:6],prmts[0][6:8]
-        ss = prmts[0][-2:] if prmts[0][-3] == '.' else '00'
-        CCYY = prmts[0][8:-3] if prmts[0][-3] == '.' else prmts[0][8:]
+        MM,DD,hh,mm = prmtrs[0][:2],prmtrs[0][2:4],prmtrs[0][4:6],prmtrs[0][6:8]
+        ss = prmtrs[0][-2:] if prmtrs[0][-3] == '.' else '00'
+        CCYY = prmtrs[0][8:-3] if prmtrs[0][-3] == '.' else prmtrs[0][8:]
         CC = CCYY[:2] if len(CCYY) == 4 else str(self.system_date.year)[:2]
         YY = CCYY[2:] if len(CCYY) == 4 else str(self.system_date.year)[2:] if len(CCYY) == 0 else CCYY
 
@@ -114,4 +114,4 @@ class Terminal:
             self.past_time = datetime.now()
             print(self.system_date.ctime())
         except:
-            print(f"date: invalid date ‘{prmts[0]}’")
+            print(f"date: invalid date ‘{prmtrs[0]}’")
