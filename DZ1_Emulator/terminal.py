@@ -26,7 +26,10 @@ class Terminal:
         while self.running:
             dir = '/' + self.working_directory if self.working_directory else ''
             info = f'{self.user}@{self.hostname}:~{dir}$ '
-            command = input(info).strip()
+            try:
+                command = input(info).strip()
+            except:
+                exit(1)
             if len(command) > 0:
                 self.parse_cmd(command)
         print("Stop running...")
@@ -170,10 +173,28 @@ class Terminal:
 
 
     def rev(self, prmtrs):
+        if not prmtrs:
+            print(input()[::-1])
 
+        while prmtrs:
+            name = prmtrs.pop(0)
+            path = self.find_path(name)
+            if path is None:
+                print(f"rev: cannot open {name}: No such file or directory")
+                continue
+            with tarfile.open(self.archive_path, 'r') as tar:
+                for member in tar:
+                    if member.name == path:
+                        if member.type == tarfile.DIRTYPE:
+                            print(f"rev: {name}: 0: Is a directory")
+                            continue
+                        file = tar.extractfile(member)
+                        try:
+                            for line in file.readlines():
+                                print(line.decode(encoding='utf-8')[::-1])
+                        except:
+                            print(f"rev: {name}: the file cannot be read")
 
-
-        pass
 
     def find(self, prmtrs):
         def find_names(directory):
@@ -192,8 +213,8 @@ class Terminal:
 
         if len(prmtrs) > 1:
             while prmtrs:
-                directory = self.find_path(prmtrs[0])
                 name = prmtrs.pop(0)
+                directory = self.find_path(name)
                 if directory is None:
                     print(f"find: '{name}': No such file or directory")
                     continue
