@@ -1,11 +1,10 @@
 import os
 import tarfile
 import xml.etree.ElementTree
-
 import getpass
+import platform
 
 from datetime import datetime
-
 
 
 #def make_tar_archive():
@@ -39,31 +38,43 @@ from datetime import datetime
 
 class Terminal:
     def __init__(self, archive_path, log_file_path, start_script_path):
+        self.running = False
+
         self.archive_path = archive_path
         self.log_file_path = log_file_path
         self.start_script_path = start_script_path
+
         self.current_directory = ''
-        self.running = False
         self.user = getpass.getuser()
+        self.hostname = platform.node()
+
         self.system_date = datetime.now()
         self.past_time = datetime.now()
 
     def run(self):
         self.running = True
         while self.running:
-            return
+            info = f'{self.user}@{self.hostname}:~{self.current_directory}$ '
+            command = input(info).strip()
+            if len(command) > 0:
+                self.parse_cmd(command)
+        print("Stop running...")
 
     def execute_start_script(self):
-        with open(self.start_script_path, 'r') as start_script:
-            for command in start_script.readlines():
-                if len(command) > 0:
-                    self.parse_cmd(command.strip())
+        try:
+            with open(self.start_script_path, 'r') as start_script:
+                for command in start_script.readlines():
+                    command = command.strip()
+                    if len(command) > 0:
+                        self.parse_cmd(command)
+        except:
+            print("Не удалось прочесть стартовый скрипт")
+            exit(1)
 
     def parse_cmd(self, command):
         prmtrs = command.split()
         if prmtrs[0] == 'exit':
             self.running = False
-            return
         elif prmtrs[0] == 'ls':
             self.ls(prmtrs[1:])
         elif prmtrs[0] == 'cd':
@@ -74,11 +85,32 @@ class Terminal:
             self.find(prmtrs[1:])
         elif prmtrs[0] == 'date':
             self.date(prmtrs[1:])
+        else:
+            print(f"Command '{prmtrs[0]}' not found.")
 
     def ls(self, prmtrs):
-        pass
+        directory = self.current_directory
+        if len(prmtrs) > 0:
+            directory = self.cd(prmtrs)
+            if not directory:
+                return
+
+        with tarfile.open(self.archive_path, 'r') as archive:
+            names = set()
+            for member in archive:
+                name = member.name
+                if name.rfind(directory) > -1:
+                    name = name[len(directory):]
+                    erase = name.find('/')
+                    if erase > -1:
+                        name = name[:name.find('/')]
+                    names.add(name)
+            print(*names)
+
+
 
     def cd(self, prmtrs):
+
         pass
 
     def rev(self, prmtrs):
@@ -99,17 +131,13 @@ class Terminal:
             print(f"date: extra operand ‘{prmtrs[1]}’")
             return
 
-        if len(prmtrs[0]) < 8:
-            print(f"date: invalid date ‘{prmtrs[0]}’")
-            return
-
-        MM,DD,hh,mm = prmtrs[0][:2],prmtrs[0][2:4],prmtrs[0][4:6],prmtrs[0][6:8]
-        ss = prmtrs[0][-2:] if prmtrs[0][-3] == '.' else '00'
-        CCYY = prmtrs[0][8:-3] if prmtrs[0][-3] == '.' else prmtrs[0][8:]
-        CC = CCYY[:2] if len(CCYY) == 4 else str(self.system_date.year)[:2]
-        YY = CCYY[2:] if len(CCYY) == 4 else str(self.system_date.year)[2:] if len(CCYY) == 0 else CCYY
-
         try:
+            MM,DD,hh,mm = prmtrs[0][:2],prmtrs[0][2:4],prmtrs[0][4:6],prmtrs[0][6:8]
+            ss = prmtrs[0][-2:] if prmtrs[0][-3] == '.' else '00'
+            CCYY = prmtrs[0][8:-3] if prmtrs[0][-3] == '.' else prmtrs[0][8:]
+            CC = CCYY[:2] if len(CCYY) == 4 else str(self.system_date.year)[:2]
+            YY = CCYY[2:] if len(CCYY) == 4 else str(self.system_date.year)[2:] if len(CCYY) == 0 else CCYY
+
             self.system_date = datetime.strptime(f'{DD}.{MM}.{CC}{YY} {hh}:{mm}:{ss}', '%d.%m.%Y %H:%M:%S')
             self.past_time = datetime.now()
             print(self.system_date.ctime())
