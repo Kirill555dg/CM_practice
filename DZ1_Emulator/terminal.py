@@ -100,8 +100,9 @@ class Terminal:
                     continue
 
                 print(f'{name}:')
-                print(*self.ls_names(directory))
-                print()
+                names = self.ls_names(directory)
+                if names: print(*names)
+                if prmtrs: print()
 
             return
 
@@ -113,8 +114,7 @@ class Terminal:
                 return
 
         names = self.ls_names(directory)
-        if names:
-            print(*names)
+        if names: print(*names)
 
     def ls_names(self, directory):
         names = set()
