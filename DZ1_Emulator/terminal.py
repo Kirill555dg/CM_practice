@@ -62,12 +62,15 @@ class Terminal:
     def find_path(self, path):
         current_path = self.working_directory
 
+        while '//' in path:
+            path = path.replace('//', '/')
+        if path[-1] == '/':
+            path = path[:-1]
+
         path = path.split('/')
-        if path[0] == '':
+        if path[0] == '/':
             current_path = ''
             path.pop(0)
-        if path[-1] == '':
-            path.pop(-1)
 
         while path:
             name = path.pop(0)
@@ -173,6 +176,20 @@ class Terminal:
         pass
 
     def find(self, prmtrs):
+        def find_names(directory):
+            names = []
+            with tarfile.open(self.archive_path, 'r') as tar:
+                for member in tar:
+                    name = member.name
+                    if name == directory:
+                        continue
+                    if name.find(directory) > -1:
+                        name = name[len(directory):]
+                        if name[0] != '/':
+                            name = '/' + name
+                        names.append(name)
+            return names
+
         if len(prmtrs) > 1:
             while prmtrs:
                 directory = self.find_path(prmtrs[0])
@@ -181,22 +198,27 @@ class Terminal:
                     print(f"find: '{name}': No such file or directory")
                     continue
 
+                names = find_names(directory)
                 print(name)
-                names = self.ls_names(directory)
-                if names: print(*names)
-                if prmtrs: print()
+                if name[-1] == '/':
+                    name = name[:-1]
+                for path in names:
+                    print(name + path)
 
             return
 
-        directory = self.working_directory
-        if len(prmtrs) == 1:
-            directory = self.find_path(prmtrs[0])
-            if directory is None:
-                print(f"ls: cannot access '{prmtrs[0]}': No such file or directory")
-                return
+        name = prmtrs[0] if prmtrs else '.'
+        directory = self.find_path(name)
+        if directory is None:
+            print(f"find: '{prmtrs[0]}': No such file or directory")
+            return
 
-        names = self.ls_names(directory)
-        if names: print(*names)
+        names = find_names(directory)
+        print(name)
+        if name[-1] == '/':
+            name = name[:-1]
+        for path in names:
+            print(name + path)
 
 
     def date(self, prmtrs):
