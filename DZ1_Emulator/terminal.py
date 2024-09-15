@@ -91,6 +91,26 @@ class Terminal:
         return current_path
 
     def ls(self, prmtrs):
+        def ls_names(directory):
+            names = set()
+            with tarfile.open(self.archive_path, 'r') as tar:
+                for member in tar:
+                    name = member.name
+                    if name.find(directory) > -1:
+                        if name == directory:
+                            if member.type == tarfile.DIRTYPE:
+                                continue
+                            return (directory[directory.rfind('/') + 1:],)
+
+                        name = name[len(directory):]
+                        if name[0] == '/':
+                            name = name[1:]
+                        erase = name.find('/')
+                        if erase > -1:
+                            name = name[:name.find('/')]
+                        names.add(name)
+            return names
+
         if len(prmtrs) > 1:
             prmtrs.sort()
             while prmtrs:
@@ -101,7 +121,7 @@ class Terminal:
                     continue
 
                 print(f'{name}:')
-                names = self.ls_names(directory)
+                names = ls_names(directory)
                 if names: print(*names)
                 if prmtrs: print()
 
@@ -114,28 +134,10 @@ class Terminal:
                 print(f"ls: cannot access '{prmtrs[0]}': No such file or directory")
                 return
 
-        names = self.ls_names(directory)
+        names = ls_names(directory)
         if names: print(*names)
 
-    def ls_names(self, directory):
-        names = set()
-        with tarfile.open(self.archive_path, 'r') as tar:
-            for member in tar:
-                name = member.name
-                if name.find(directory) > -1:
-                    if name == directory:
-                        if member.type == tarfile.DIRTYPE:
-                            continue
-                        return (directory[directory.rfind('/')+1:],)
 
-                    name = name[len(directory):]
-                    if name[0] == '/':
-                        name = name[1:]
-                    erase = name.find('/')
-                    if erase > -1:
-                        name = name[:name.find('/')]
-                    names.add(name)
-        return names
 
     def cd(self, prmtrs):
         if not prmtrs:
@@ -171,10 +173,31 @@ class Terminal:
         pass
 
     def find(self, prmtrs):
+        if len(prmtrs) > 1:
+            while prmtrs:
+                directory = self.find_path(prmtrs[0])
+                name = prmtrs.pop(0)
+                if directory is None:
+                    print(f"find: '{name}': No such file or directory")
+                    continue
 
+                print(name)
+                names = self.ls_names(directory)
+                if names: print(*names)
+                if prmtrs: print()
 
+            return
 
-        pass
+        directory = self.working_directory
+        if len(prmtrs) == 1:
+            directory = self.find_path(prmtrs[0])
+            if directory is None:
+                print(f"ls: cannot access '{prmtrs[0]}': No such file or directory")
+                return
+
+        names = self.ls_names(directory)
+        if names: print(*names)
+
 
     def date(self, prmtrs):
         if not prmtrs:
