@@ -1,5 +1,5 @@
 import tarfile
-import xml.etree.ElementTree
+import xml.etree.ElementTree as ET
 import getpass
 import platform
 
@@ -10,8 +10,15 @@ class Terminal:
     def __init__(self, archive_path, log_file_path, start_script_path):
         self.running = False
 
-        self.archive_path = archive_path
+        try:
+            self.log_file = ET.parse(log_file_path)
+            self.xml = ET.SubElement(self.log_file.getroot(), "log_info_" + datetime.now().isoformat(timespec='minutes').replace(':','.'))
+        except:
+            print("Лог-файл формата xml открыть не удалось. Проверьте корректность содержания файла.")
+            exit(1)
+
         self.log_file_path = log_file_path
+        self.archive_path = archive_path
         self.start_script_path = start_script_path
 
         self.working_directory = ''
@@ -23,6 +30,7 @@ class Terminal:
 
     def run(self):
         self.running = True
+        self.execute_start_script()
         while self.running:
             dir = '/' + self.working_directory if self.working_directory else ''
             info = f'{self.user}@{self.hostname}:~{dir}$ '
@@ -49,17 +57,38 @@ class Terminal:
         prmtrs = command.split()
         if prmtrs[0] == 'exit':
             self.running = False
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            self.log_file.write(self.log_file_path)
         elif prmtrs[0] == 'ls':
             self.ls(prmtrs[1:])
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['parameters'] = ' '.join(prmtrs[1:])
         elif prmtrs[0] == 'cd':
             self.cd(prmtrs[1:])
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['parameters'] = ' '.join(prmtrs[1:])
         elif prmtrs[0] == 'rev':
             self.rev(prmtrs[1:])
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['parameters'] = ' '.join(prmtrs[1:])
         elif prmtrs[0] == 'find':
             self.find(prmtrs[1:])
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['parameters'] = ' '.join(prmtrs[1:])
         elif prmtrs[0] == 'date':
             self.date(prmtrs[1:])
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['parameters'] = ' '.join(prmtrs[1:])
         else:
+            log = ET.SubElement(self.xml, 'command')
+            log.text = prmtrs[0]
+            log.attrib['success'] = 'false'
             print(f"Command '{prmtrs[0]}' not found.")
 
     def find_path(self, path):
