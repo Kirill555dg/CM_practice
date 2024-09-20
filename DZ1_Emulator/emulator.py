@@ -4,6 +4,7 @@ import csv
 from os.path import exists
 from sys import argv
 from terminal import Terminal
+from gui import GUI
 
 def read_config_file():
     if len(argv) < 2:
@@ -66,7 +67,8 @@ def read_config_file():
 
 def execute_terminal(archive_path, log_file_path, start_script_path):
     terminal = Terminal(archive_path, log_file_path, start_script_path)
-    terminal.run()
+    gui = GUI(terminal)
+    gui.run()
 
 if __name__ == "__main__":
     paths = read_config_file()
