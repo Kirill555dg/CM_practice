@@ -170,6 +170,26 @@ digraph {
 
 Решить на MiniZinc задачу о счастливых билетах. Добавить ограничение на то, что все цифры билета должны быть различными (подсказка: используйте all_different). Найти минимальное решение для суммы 3 цифр.
 
+Решение:
+```MiniZinc
+include "alldifferent.mzn";
+
+var 0..9: a;
+var 0..9: b;
+var 0..9: c;
+var 0..9: d;
+var 0..9: e;
+var 0..9: f;
+
+constraint a + b + c == d + e + f;
+
+constraint alldifferent([a,b,c,d,e,f]);
+
+solve minimize a + b + c;
+```
+![image](https://github.com/user-attachments/assets/71abc48d-6dca-4bf9-bcf8-07d6e973cae3)
+
+
 ## Задача 5
 
 Решить на MiniZinc задачу о зависимостях пакетов для рисунка, приведенного ниже.
