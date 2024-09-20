@@ -11,7 +11,7 @@ class GUI:
         self.window.resizable(False, False)
         self.window.title("Shell Emulator")
 
-        self.console = Text(width=80, height=25, borderwidth=1, relief='solid', font=24)
+        self.console = Text(borderwidth=1, relief='solid', font=24)
         self.console.configure(state=tk.DISABLED)
 
         self.enter = Entry(font=24)
@@ -20,9 +20,9 @@ class GUI:
         self.butn.bind('<Button-1>', self.get_cmd)
         self.enter.bind('<Return>', self.get_cmd)
 
-        self.console.place(x=20, y=10)
+        self.console.place(x=20, y=10, width=750, height=450)
         self.enter.place(x=20, y=500, height=40, relwidth=0.75)
-        self.butn.place(x=693, y=500, height=40)
+        self.butn.place(x=700, y=500, height=40)
         self.is_cmd = True
 
         self.terminal.enableGUI(self)
