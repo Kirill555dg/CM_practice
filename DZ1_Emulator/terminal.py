@@ -36,6 +36,7 @@ class Terminal:
             print(message)
         else:
             self.gui.write(message + "\n")
+        return message
 
     def enableGUI(self, gui):
         self.gui = gui
@@ -56,7 +57,7 @@ class Terminal:
                 exit(1)
             if len(command) > 0:
                 self.parse_cmd(command)
-        print("Stop running...")
+        return self.write("Stop running...")
 
     def execute_start_script(self):
         try:
@@ -71,48 +72,52 @@ class Terminal:
 
     def parse_cmd(self, command):
         prmtrs = command.split()
-        self.gui.write(' '.join(prmtrs) + '\n')
+        if self.gui: self.gui.write(' '.join(prmtrs) + '\n')
+        message = "no message"
         if prmtrs:
-            if prmtrs[0] == 'exit':
-                self.running = False
-                log = ET.SubElement(self.xml, 'command')
-                log.text = prmtrs[0]
-                self.log_file.write(self.log_file_path)
-                if gui: self.gui.disable()
-            elif prmtrs[0] == 'ls':
-                self.ls(prmtrs[1:])
+            if prmtrs[0] == 'ls':
+                message = self.ls(prmtrs[1:])
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['parameters'] = ' '.join(prmtrs[1:])
             elif prmtrs[0] == 'cd':
-                self.cd(prmtrs[1:])
+                message = self.cd(prmtrs[1:])
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['parameters'] = ' '.join(prmtrs[1:])
             elif prmtrs[0] == 'rev':
-                self.rev(prmtrs[1:])
+                message = self.rev(prmtrs[1:])
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['parameters'] = ' '.join(prmtrs[1:])
             elif prmtrs[0] == 'find':
-                self.find(prmtrs[1:])
+                message = self.find(prmtrs[1:])
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['parameters'] = ' '.join(prmtrs[1:])
             elif prmtrs[0] == 'date':
-                self.date(prmtrs[1:])
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['parameters'] = ' '.join(prmtrs[1:])
+                message = self.date(prmtrs[1:])
+            elif prmtrs[0] == 'exit':
+                self.running = False
+                log = ET.SubElement(self.xml, 'command')
+                log.text = prmtrs[0]
+                self.log_file.write(self.log_file_path)
+                if self.gui: self.gui.disable()
+                message = "exit"
             else:
                 log = ET.SubElement(self.xml, 'command')
                 log.text = prmtrs[0]
                 log.attrib['success'] = 'false'
-                self.write(f"Command '{prmtrs[0]}' not found.")
+                message = self.write(f"Command '{prmtrs[0]}' not found.")
+
         if (prmtrs[0] != 'rev') or (prmtrs[1:]):
             dir = '/' + self.working_directory if self.working_directory else ''
             info = f'{self.user}@{self.hostname}:~{dir}$ '
-            self.gui.write(info)
+            if self.gui: self.gui.write(info)
+        return message
 
     def find_path(self, path):
         current_path = self.working_directory
@@ -149,6 +154,7 @@ class Terminal:
         return current_path
 
     def ls(self, prmtrs):
+        message = ""
         def ls_names(directory):
             names = set()
             with tarfile.open(self.archive_path, 'r') as tar:
@@ -178,70 +184,74 @@ class Terminal:
                     self.write(f"ls: cannot access '{name}': No such file or directory")
                     continue
 
-                self.write(f'{name}:')
+                message += self.write(f'{name}:') + '\n'
                 names = ls_names(directory)
-                if names: self.write(' '.join(names))
-                if prmtrs: self.write('')
+                if names: message += self.write(' '.join(names)) + '\n'
+                if prmtrs: message += self.write('') + '\n'
 
-            return
+            return message
 
         directory = self.working_directory
         if len(prmtrs) == 1:
             directory = self.find_path(prmtrs[0])
             if directory is None:
-                self.write(f"ls: cannot access '{prmtrs[0]}': No such file or directory")
-                return
+                message += self.write(f"ls: cannot access '{prmtrs[0]}': No such file or directory") + '\n'
+                return message
 
         names = ls_names(directory)
-        if names: self.write(' '.join(names))
+        if names: message += self.write(' '.join(names)) + '\n'
+        return message
 
 
 
     def cd(self, prmtrs):
         if not prmtrs:
             self.working_directory = ''
-            return
+            return 'root directory'
 
         if len(prmtrs) > 1:
-            self.write("cd: too many arguments")
-            return
+            return self.write("cd: too many arguments")
+
 
         new_directory = self.find_path(prmtrs[0])
         if new_directory is None:
-            self.write(f"cd: {prmtrs[0]}: No such file or directory")
-            return
+            return self.write(f"cd: {prmtrs[0]}: No such file or directory")
         if new_directory == '':
             self.working_directory = new_directory
-            return
+            return f"change to " + new_directory
+
 
         with tarfile.open(self.archive_path, 'r') as tar:
             for member in tar:
                 if member.name == new_directory:
                     if member.type != tarfile.DIRTYPE:
-                        self.write(f"cd: {prmtrs[0]}: Not a directory")
-                        return
+                        return self.write(f"cd: {prmtrs[0]}: Not a directory")
                     self.working_directory = new_directory
-                    return
+                    return f"change to " + new_directory
 
     def rev_gui(self, text):
-        self.write(text)
-        self.write(text[::-1])
+        message = ""
+        message += self.write(text) + '\n'
+        message += self.write(text[::-1]) + '\n'
         dir = '/' + self.working_directory if self.working_directory else ''
         info = f'{self.user}@{self.hostname}:~{dir}$ '
         self.gui.write(info)
+        return message
 
     def rev(self, prmtrs):
+        message = ""
         if not prmtrs:
-            if gui:
+            if self.gui:
                 self.gui.get_text()
+                return "wait for text"
             else:
-                self.write(input()[::-1])
+                return self.write(input()[::-1])
 
         while prmtrs:
             name = prmtrs.pop(0)
             path = self.find_path(name)
             if path is None:
-                self.write(f"rev: cannot open {name}: No such file or directory")
+                message += self.write(f"rev: cannot open {name}: No such file or directory") + '\n'
                 continue
             with tarfile.open(self.archive_path, 'r') as tar:
                 for member in tar:
@@ -252,12 +262,13 @@ class Terminal:
                         file = tar.extractfile(member)
                         try:
                             for line in file.readlines():
-                                self.write(line.decode(encoding='utf-8')[::-1])
+                                message += self.write(line.decode(encoding='utf-8')[::-1]) + '\n'
                         except:
-                            self.write(f"rev: {name}: the file cannot be read")
-
+                            message += self.write(f"rev: {name}: the file cannot be read") + '\n'
+        return message
 
     def find(self, prmtrs):
+        message = ""
         def find_names(directory):
             names = []
             with tarfile.open(self.archive_path, 'r') as tar:
@@ -277,43 +288,45 @@ class Terminal:
                 name = prmtrs.pop(0)
                 directory = self.find_path(name)
                 if directory is None:
-                    self.write(f"find: '{name}': No such file or directory")
+                    message += self.write(f"find: '{name}': No such file or directory") + '\n'
                     continue
 
                 names = find_names(directory)
-                self.write(name)
+                message += self.write(name) + '\n'
                 if name[-1] == '/':
                     name = name[:-1]
                 for path in names:
-                    self.write(name + path)
+                    message += self.write(name + path) + '\n'
 
-            return
+            return message
 
         name = prmtrs[0] if prmtrs else '.'
         directory = self.find_path(name)
         if directory is None:
-            self.write(f"find: '{prmtrs[0]}': No such file or directory")
-            return
+            message += self.write(f"find: '{prmtrs[0]}': No such file or directory") + '\n'
+            return message
 
         names = find_names(directory)
-        self.write(name)
+        message += self.write(name) + '\n'
         if name[-1] == '/':
             name = name[:-1]
         for path in names:
-            self.write(name + path)
+            message += self.write(name + path) + '\n'
+        return message
 
 
     def date(self, prmtrs):
+        message = ""
         if not prmtrs:
             delta = datetime.now() - self.past_time
             self.system_date += delta
             self.past_time = datetime.now()
-            self.write(self.system_date.ctime())
-            return
+            message += self.write(self.system_date.ctime()) + '\n'
+            return message
 
         if len(prmtrs) > 1:
-            self.write(f"date: extra operand ‘{prmtrs[1]}’")
-            return
+            message += self.write(f"date: extra operand ‘{prmtrs[1]}’") + '\n'
+            return message
 
         try:
             MM,DD,hh,mm = prmtrs[0][:2],prmtrs[0][2:4],prmtrs[0][4:6],prmtrs[0][6:8]
@@ -324,6 +337,7 @@ class Terminal:
 
             self.system_date = datetime.strptime(f'{DD}.{MM}.{CC}{YY} {hh}:{mm}:{ss}', '%d.%m.%Y %H:%M:%S')
             self.past_time = datetime.now()
-            self.write(self.system_date.ctime())
+            message += self.write(self.system_date.ctime()) + '\n'
         except:
-            self.write(f"date: invalid date ‘{prmtrs[0]}’")
+            message += self.write(f"date: invalid date ‘{prmtrs[0]}’") + '\n'
+        return message

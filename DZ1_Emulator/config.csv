@@ -1,3 +1,3 @@
-archive_path,C:\Users\Kiril\Projects_python\CM_practice\DZ1_Emulator\archive.tar
-log_file_path,C:\Users\Kiril\Projects_python\CM_practice\DZ1_Emulator\log_file.xml
-start_script_path,C:\Users\Kiril\Projects_python\CM_practice\DZ1_Emulator\start_script.txt
+archive_path,archive.tar
+log_file_path,log_file.xml
+start_script_path,start_script.txt

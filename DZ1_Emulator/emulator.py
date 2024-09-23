@@ -6,6 +6,7 @@ from sys import argv
 from terminal import Terminal
 from gui import GUI
 
+
 def read_config_file():
     if len(argv) < 2:
         print("Для корректного запуска эмулятора необходимо ввести: " 
@@ -69,6 +70,7 @@ def execute_terminal(archive_path, log_file_path, start_script_path):
     terminal = Terminal(archive_path, log_file_path, start_script_path)
     gui = GUI(terminal)
     gui.run()
+    return terminal
 
 if __name__ == "__main__":
     paths = read_config_file()
