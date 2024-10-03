@@ -196,6 +196,61 @@ solve minimize a + b + c;
 
 ![image](https://github.com/user-attachments/assets/3d0b5c4c-b8fa-419e-a6f3-8d797e1404ae)
 
+Решение: Я создал программу minizinc, которая решает любую задачу зависимостей пакетов (в общей форме), которая удовлетворяет задаче 7. Код представлен в решении задачи 7, здесь представлены только входные данные
+
+Файл data.dzn
+```minizinc
+target_name = "root";
+  
+packages = [
+
+  (name: "root", version: (1,0,0)), 
+  
+  (name: "menu", version: (1,0,0)),
+  (name: "menu", version: (1,1,0)),
+  (name: "menu", version: (1,2,0)),
+  (name: "menu", version: (1,3,0)),
+  (name: "menu", version: (1,4,0)),
+  (name: "menu", version: (1,5,0)),
+  
+  (name: "icons", version: (1,0,0)),
+  (name: "icons", version: (2,0,0)),
+  
+  (name: "dropdown", version: (1,8,0)),
+  (name: "dropdown", version: (2,0,0)),
+  (name: "dropdown", version: (2,1,0)),
+  (name: "dropdown", version: (2,2,0)),
+  (name: "dropdown", version: (2,3,0))
+  
+];
+
+dependencies = [
+  (package: (name: "root", version: (1,0,0)), require: (name: "menu", version: (1,0,0)), interval: "="),
+  (package: (name: "root", version: (1,0,0)), require: (name: "menu", version: (1,5,0)), interval: "="),
+  (package: (name: "root", version: (1,0,0)), require: (name: "icons", version: (1,0,0)), interval: "^"),
+  
+  (package: (name: "menu", version: (1,0,0)), require: (name: "dropdown", version: (1,8,0)), interval: "="),
+  (package: (name: "menu", version: (1,1,0)), require: (name: "dropdown", version: (2,0,0)), interval: "="),
+  (package: (name: "menu", version: (1,1,0)), require: (name: "dropdown", version: (2,3,0)), interval: "="),
+  (package: (name: "menu", version: (1,2,0)), require: (name: "dropdown", version: (2,0,0)), interval: "="),
+  (package: (name: "menu", version: (1,2,0)), require: (name: "dropdown", version: (2,3,0)), interval: "="),
+  (package: (name: "menu", version: (1,3,0)), require: (name: "dropdown", version: (2,0,0)), interval: "="),
+  (package: (name: "menu", version: (1,3,0)), require: (name: "dropdown", version: (2,3,0)), interval: "="),
+  (package: (name: "menu", version: (1,4,0)), require: (name: "dropdown", version: (2,0,0)), interval: "="),
+  (package: (name: "menu", version: (1,4,0)), require: (name: "dropdown", version: (2,3,0)), interval: "="),
+  (package: (name: "menu", version: (1,5,0)), require: (name: "dropdown", version: (2,0,0)), interval: "="),
+  (package: (name: "menu", version: (1,5,0)), require: (name: "dropdown", version: (2,3,0)), interval: "="),
+  
+  
+  (package: (name: "dropdown", version: (2,0,0)), require: (name: "icons", version: (2,0,0)), interval: "~"),
+  (package: (name: "dropdown", version: (2,1,0)), require: (name: "icons", version: (2,0,0)), interval: "="),
+  (package: (name: "dropdown", version: (2,2,0)), require: (name: "icons", version: (2,0,0)), interval: "^"),
+  (package: (name: "dropdown", version: (2,3,0)), require: (name: "icons", version: (2,0,0)), interval: ">=")
+];
+```
+
+![image](https://github.com/user-attachments/assets/58a2c65d-69a0-4736-9d24-3f70f4ad61d7)
+
 
 ## Задача 6
 
@@ -212,6 +267,215 @@ shared 1.0.0 зависит от target ^1.0.0.
 target 2.0.0 и 1.0.0 не имеют зависимостей.
 ```
 
+Решение: Я создал программу minizinc, которая решает любую задачу зависимостей пакетов (в общей форме), которая удовлетворяет задаче 7. Код представлен в решении задачи 7, здесь представлены только входные данные
+
+Файл data.dzn
+```minizinc
+target_name = "root";
+  
+packages = [
+  (name: "root", version: (1,0,0)), 
+  
+  (name: "foo", version: (1,1,0)),
+  (name: "foo", version: (1,0,0)),
+  
+  (name: "left", version: (1,0,0)),
+  
+  (name: "right", version: (1,0,0)),
+  
+  (name: "shared", version: (2,0,0)),
+  (name: "shared", version: (1,0,0)),
+  
+  (name: "target", version: (2,0,0)),
+  (name: "target", version: (1,0,0))
+];
+
+dependencies = [
+  (package: (name: "root", version: (1,0,0)), require: (name: "foo", version: (1,0,0)), interval: "^"),
+  (package: (name: "root", version: (1,0,0)), require: (name: "target", version: (2,0,0)), interval: "^"),
+  
+  (package: (name: "foo", version: (1,1,0)), require: (name: "left", version: (1,0,0)), interval: "^"),
+  (package: (name: "foo", version: (1,1,0)), require: (name: "right", version: (1,0,0)), interval: "^"),
+  
+  (package: (name: "left", version: (1,0,0)), require: (name: "shared", version: (1,0,0)), interval: ">="),
+  
+  (package: (name: "right", version: (1,0,0)), require: (name: "shared", version: (2,0,0)), interval: "<"),
+  
+  (package: (name: "shared", version: (1,0,0)), require: (name: "target", version: (1,0,0)), interval: "^")
+];
+```
+
+![image](https://github.com/user-attachments/assets/7e6f1d94-e153-422a-bcdf-dafb7e65c8fa)
+
+
 ## Задача 7
 
 Представить на MiniZinc задачу о зависимостях пакетов в общей форме, чтобы конкретный экземпляр задачи описывался только своим набором данных.
+
+Решение:
+
+```minizinc
+type Version = tuple(int, int, int);
+type Package = record(string: name, Version: version);
+type Dependency = record(Package: package, Package: require, string: interval);
+
+predicate major_e__minor_e__patch_e(Version:versionV, Version:versionP) = 
+  versionV.1==versionP.1 /\ versionV.2==versionP.2 /\ versionV.3==versionV.3;
+
+predicate major_e__minor_e__patch_b(Version:versionV, Version:versionP) = 
+  versionV.1==versionP.1 /\ versionV.2==versionP.2 /\ versionV.3>versionV.3;
+    
+predicate major_e__minor_e__patch_l(Version:versionV, Version:versionP) = 
+  versionV.1==versionP.1 /\ versionV.2==versionP.2 /\ versionV.3<versionV.3;
+    
+predicate major_e__minor_b(Version:versionV, Version:versionP) =
+  versionV.1==versionP.1 /\ versionV.2>versionP.2;
+  
+predicate major_e__minor_l(Version:versionV, Version:versionP) = 
+  versionV.1==versionP.1 /\ versionV.2<versionP.2;
+
+predicate major_b(Version:versionV, Version:versionP) = 
+  versionV.1>versionP.1;
+
+predicate major_l(Version:versionV, Version:versionP) = 
+  versionV.1<versionP.1;
+
+array[_] of Package: packages;
+array[_] of Dependency: dependencies;
+string: target_name;
+
+int: N = length(packages);
+int: M = length(dependencies);
+
+%%% Массив установленных пакетов (1 - установлен, 0 - не установлен)
+array[1..N] of var 0..1: installed;
+
+%%% Одноименный пакет должен быть установлен не более 1 версии
+constraint forall(i in 1..N)(sum(j in 1..N where packages[i].name == packages[j].name)(installed[j]) <= 1);
+  
+%%% Целевой пакет должен быть установлен одной версии
+constraint (sum(j in 1..N where target_name == packages[j].name)(installed[j]) == 1);
+
+%%% Ограничение на зависимости
+% Для всех установленных пакетов
+constraint forall (p in 1..N where installed[p] == 1)  
+(
+  % Для всех зависимостей, которые нужно для пакета p
+  forall(d in 1..M where dependencies[d].package == packages[p]) 
+  (
+    % Существует хотя бы одна другая зависимость с таким же пакетом и таким же именем требуемого пакета
+    exists(ad in 1..M where dependencies[ad].require.name == dependencies[d].require.name /\ dependencies[ad].package == dependencies[d].package) 
+    (
+      % Такая, что для этой зависимости существует установленный пакет, у которого такое же имя и подходящая версия под интервал
+      exists(dp in 1..N where packages[dp].name == dependencies[ad].require.name) 
+      (
+        installed[dp] == 1 /\
+        (
+          if dependencies[ad].interval = "^"
+          then (    
+            major_e__minor_e__patch_e(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_e__patch_b(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_b(packages[dp].version, dependencies[ad].require.version)
+          )
+          elseif dependencies[ad].interval = "~"
+          then (    
+            major_e__minor_e__patch_e(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_e__patch_b(packages[dp].version, dependencies[ad].require.version)
+          )
+          elseif dependencies[ad].interval = ">="
+          then (
+            major_e__minor_e__patch_e(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_e__patch_b(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_b(packages[dp].version, dependencies[ad].require.version) \/
+            major_b(packages[dp].version, dependencies[ad].require.version)
+          )
+          elseif dependencies[ad].interval = ">"
+          then (
+            major_e__minor_e__patch_b(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_b(packages[dp].version, dependencies[ad].require.version) \/
+            major_b(packages[dp].version, dependencies[ad].require.version)
+          )
+          elseif dependencies[ad].interval = "<="
+          then (
+            major_e__minor_e__patch_e(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_e__patch_l(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_l(packages[dp].version, dependencies[ad].require.version) \/
+            major_l(packages[dp].version, dependencies[ad].require.version)
+          )
+          elseif dependencies[ad].interval = "<"
+          then (
+            major_e__minor_e__patch_l(packages[dp].version, dependencies[ad].require.version) \/
+            major_e__minor_l(packages[dp].version, dependencies[ad].require.version) \/
+            major_l(packages[dp].version, dependencies[ad].require.version)
+          )
+          else major_e__minor_e__patch_e(packages[dp].version, dependencies[ad].require.version)
+          endif
+        )
+      )
+    )
+  )
+);
+
+solve minimize sum(i in 1..N)(installed[i]);
+
+output["Целевой пакет: \(target_name)\n"];
+output["\nИсходные зависимости:\n"];
+output["\(dependencies[i])\n" | i in 1..M];
+output["\nУстановленные пакеты (1 - установлен, 0 - не установлен):\n"];
+output["\(installed[i]): \(packages[i])\n" | i in 1..N];
+```
+
+Входные данные:
+```minizinc
+% Пакет, который требуется установить
+%
+% target_name = <ИМЯ-ЦЕЛЕВОГО-ПАКЕТА>, где <ИМЯ-ЦЕЛЕВОГО-ПАКЕТА> - строчное наименование пакета
+%
+% Пример:
+target_name = "root";
+
+
+% Пакеты, доступные для установки
+%
+% Пакет записывается в виде:
+% (name: <ИМЯ-ПАКЕТА>, version: <ВЕРСИЯ-ПАКЕТА>)
+%
+% <ИМЯ-ПАКЕТА> - строчное наименование пакета
+%
+% <ВЕРСИЯ-ПАКЕТА> записывается в виде (<a>,<b>,<c>), 
+% где <a> - мажорная версия, <b> - минорная версия, <c> - патч-версия
+%
+% Пример:
+packages = [
+  (name: "root", version: (1,0,0)), 
+  (name: "root", version: (1,1,0)),
+  
+  (name: "foo", version: (1,0,0)),
+  (name: "foo", version: (1,2,3)),
+  (name: "foo", version: (2,5,0))
+];
+
+% Зависимости, требуемые для установки пакета
+
+% Зависимость записывается в виде:
+% (package: <УСТАНАВЛИВАЕМЫЙ-ПАКЕТ>, require: <ТРЕБУЕМЫЙ-ПАКЕТ>, interval: <ИНТЕРВАЛ-ВЕРСИЙ>)
+%
+% <УСТАНАВЛИВАЕМЫЙ-ПАКЕТ> - Конкретный пакет, для которого требуется установка другого пакета. 
+% Вид записи представлен выше
+%
+% <ТРЕБУЕМЫЙ-ПАКЕТ> - пакет, установка которого требуется. 
+% Указывается требуемое имя, версия пакета используется для интервала
+% Вид записи представлен выше
+%
+% <ИНТЕРВАЛ-ВЕРСИЙ> - строчное указание интервала, доступные интервалы:
+% "^"; "~", ">=", ">", "<=", "<". При указании любой другой строки будет использован интервал "="
+%
+% Пример:
+dependencies = [
+  (package: (name: "root", version: (1,0,0)), require: (name: "foo", version: (1,0,0)), interval: "^"),
+  (package: (name: "root", version: (1,0,0)), require: (name: "foo", version: (2,0,0)), interval: "~"),
+  
+  (package: (name: "root", version: (1,1,0)), require: (name: "foo", version: (3,3,3)), interval: "<=")
+];
+```
+
