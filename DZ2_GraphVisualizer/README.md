@@ -33,14 +33,17 @@
 Файл должен содержать данные в следующем формате:
 ```json
 {
-  "mermaid_path": "mmdc_path",
-  "package_name": "https://registry.npmjs.org/{package_name}",
+  "mermaid_path": "{mmdc_path}",
+  "npm_registry_url": "https://registry.npmjs.org",
+  "package_name": "{package_name}",
   "max_depth": 3
 }
 ```
 
 Где:
 - **mmdc_path** -- Путь к программе для визуализации графов,
+- **npm_registry_url** -- URL-адрес, по которому находится npm-регистратор, 
+с которым можно работать для получения информации о пакетах
 - **package_name** -- Имя анализируемого пакета,
 - **max_depth** -- Максимальная глубина анализа зависимостей.
 
