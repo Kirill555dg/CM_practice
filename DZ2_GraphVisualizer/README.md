@@ -10,6 +10,22 @@
    ```bash
    npm install -g @mermaid-js/mermaid-cli
    ```
+   
+3. Убедитесь, что у вас установлен Python 3.x.
+
+4. Установите необходимую библиотеку **requests**:
+   ```bash
+   pip install requests
+   ```
+
+5. Создайте виртуальное окружение (опционально):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Для Linux/Mac
+   venv\Scripts\activate     # Для Windows
+   ```
+
+Проект установлен.
 
 # Конфигурационный файл
 
