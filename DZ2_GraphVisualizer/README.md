@@ -17,14 +17,14 @@
 Файл должен содержать данные в следующем формате:
 ```json
 {
-  "mermaid_path": "PATH",
-  "package_name": "NAME",
-  "max_depth": 0
+  "mermaid_path": "mmdc_path",
+  "package_name": "https://registry.npmjs.org/{package_name}",
+  "max_depth": 3
 }
 ```
 
 Где:
-- **mermaid_path** -- Путь к программе для визуализации графов,
+- **mmdc_path** -- Путь к программе для визуализации графов,
 - **package_name** -- Имя анализируемого пакета,
 - **max_depth** -- Максимальная глубина анализа зависимостей.
 
