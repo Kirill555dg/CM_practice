@@ -86,7 +86,7 @@ py [path]/visualizer.py [config]
 
 # Тесты
 
-Для всех методов были написаны тесты, в результате удалось добиться покрытия в 74%.
+Для всех методов были написаны тесты, в результате удалось добиться покрытия в 82%.
 Перед запуском тестов, нужно перейти в директорию, где находится файл test_visualizer.py
 Также нужно убедиться, что на устройстве установлена библиотека pytest и coverage
 
@@ -109,9 +109,11 @@ coverage report
 ```
 
 ## Прохождение тестов:
-![image](https://github.com/user-attachments/assets/7cc56bf4-ac05-45b7-8a5f-cf6c780dc9c8)
+![image](https://github.com/user-attachments/assets/783172e1-0de0-4cea-8334-cc677a72589a)
+
 
 
 ## Процент покрытия:
-![image](https://github.com/user-attachments/assets/c0504712-576e-447c-925f-c4b17a5d4edf)
+![image](https://github.com/user-attachments/assets/ce6ce9ab-0c6d-4ef8-b4d5-1ee1f48d13a4)
+
 
