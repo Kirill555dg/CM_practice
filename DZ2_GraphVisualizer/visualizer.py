@@ -2,7 +2,7 @@ import requests
 import json
 import os
 import sys
-
+from subprocess import call
 
 def read_config_file():
     if len(sys.argv) < 2:
@@ -62,7 +62,7 @@ def get_dependencies(package_name, npm_registry_url, depth, max_depth, graph):
         get_dependencies(dep, npm_registry_url, depth + 1, max_depth, graph)
 
 
-def generate_mermaid_graph(graph):
+def get_graph(graph):
     mermaid_syntax = "graph TD;\n"
     for package, dependencies in graph.items():
         for dep in dependencies:
@@ -76,6 +76,14 @@ def save_mermaid_file(content, package_name):
         file.write(content)
     print(f"Mermaid файл сохранен как {file_name} в папке с визуализатором")
 
+def generate_mermaid_graph(package_name, mermaid_path):
+    input_file = f"{package_name}_dependency_graph.mmd"
+    output_file = f"{package_name}_dependency_graph.png"
+    try:
+        call([mermaid_path, "-i", input_file, "-o", output_file])
+        print(f"Граф успешно сгенерирован и сохранен как {output_file} в папке с визуализатором")
+    except OSError as e:
+        print(f"Ошибка при генерации графа: {e}")
 
 def main():
     mermaid_path, npm_registry_url, package_name, max_depth = read_config_file()
@@ -93,10 +101,11 @@ def main():
     get_dependencies(package_name, npm_registry_url, 0, max_depth, graph)
     # print("Граф зависимостей пакета:")
     # print(json.dumps(graph, indent=2))
-    mermaid_graph = generate_mermaid_graph(graph)
+    mermaid_graph = get_graph(graph)
 
     save_mermaid_file(mermaid_graph, package_name)
 
+    generate_mermaid_graph(package_name, mermaid_path)
 
 if __name__ == "__main__":
     main()
