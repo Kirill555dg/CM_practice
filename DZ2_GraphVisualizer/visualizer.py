@@ -3,6 +3,7 @@ import json
 import os
 import sys
 
+
 def read_config_file():
     if len(sys.argv) < 2:
         print("Для корректного запуска программы необходимо ввести: "
@@ -33,7 +34,6 @@ def read_config_file():
     return config["mermaid_path"], config["npm_registry_url"], config["package_name"], config["max_depth"]
 
 
-
 def fetch_package_data(package_name, npm_registry_url):
     url = f"{npm_registry_url}/{package_name}"
     try:
@@ -61,6 +61,22 @@ def get_dependencies(package_name, npm_registry_url, depth, max_depth, graph):
     for dep in dependencies:
         get_dependencies(dep, npm_registry_url, depth + 1, max_depth, graph)
 
+
+def generate_mermaid_graph(graph):
+    mermaid_syntax = "graph TD;\n"
+    for package, dependencies in graph.items():
+        for dep in dependencies:
+            mermaid_syntax += f"  {package} --> {dep};\n"
+    return mermaid_syntax
+
+
+def save_mermaid_file(content, package_name):
+    file_name = f"{package_name}_dependency_graph.mmd"
+    with open(file_name, "w") as file:
+        file.write(content)
+    print(f"Mermaid файл сохранен как {file_name} в папке с визуализатором")
+
+
 def main():
     mermaid_path, npm_registry_url, package_name, max_depth = read_config_file()
     # Получение данных о пакете
@@ -72,11 +88,15 @@ def main():
         exit(1)
 
     print(f"Данные о пакете {package_name} успешно получены.")
-    print(json.dumps(package_data, indent=2))  # Красивый вывод JSON
+    # print(json.dumps(package_data, indent=2))  # Красивый вывод JSON
 
     get_dependencies(package_name, npm_registry_url, 0, max_depth, graph)
-    print("Граф зависимостей пакета:")
-    print(json.dumps(graph, indent=2))
+    # print("Граф зависимостей пакета:")
+    # print(json.dumps(graph, indent=2))
+    mermaid_graph = generate_mermaid_graph(graph)
+
+    save_mermaid_file(mermaid_graph, package_name)
+
 
 if __name__ == "__main__":
-   main()
+    main()
