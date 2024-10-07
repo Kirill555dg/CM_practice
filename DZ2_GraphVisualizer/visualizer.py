@@ -45,15 +45,38 @@ def fetch_package_data(package_name, npm_registry_url):
         return None
 
 
+def get_dependencies(package_name, npm_registry_url, depth, max_depth, graph):
+    if depth > max_depth:
+        return
+
+    package_data = fetch_package_data(package_name, npm_registry_url)
+    if not package_data:
+        return
+
+    # Извлекаем зависимости пакета
+    dependencies = package_data.get('versions', {}).get(package_data['dist-tags']['latest'], {}).get('dependencies', {})
+    graph[package_name] = list(dependencies.keys())
+
+    # Рекурсивно обрабатываем каждую зависимость
+    for dep in dependencies:
+        get_dependencies(dep, npm_registry_url, depth + 1, max_depth, graph)
+
 def main():
     mermaid_path, npm_registry_url, package_name, max_depth = read_config_file()
     # Получение данных о пакете
+    graph = {}
+
     package_data = fetch_package_data(package_name, npm_registry_url)
-    if package_data:
-        print(f"Данные о пакете {package_name} успешно получены.")
-        # print(json.dumps(package_data, indent=2))  # Красивый вывод JSON
-    else:
-        print("Не удалось получить данные о пакете.")
+    if not package_data:
+        print(f"Не удалось получить данные о пакете {package_name}")
+        exit(1)
+
+    print(f"Данные о пакете {package_name} успешно получены.")
+    print(json.dumps(package_data, indent=2))  # Красивый вывод JSON
+
+    get_dependencies(package_name, npm_registry_url, 0, max_depth, graph)
+    print("Граф зависимостей пакета:")
+    print(json.dumps(graph, indent=2))
 
 if __name__ == "__main__":
    main()
