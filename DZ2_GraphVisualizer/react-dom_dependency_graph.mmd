@@ -1,0 +1,17 @@
+classDiagram
+  class react-dom {
+    +version: 18.3.1
+  }
+  react-dom --> scheduler
+  react-dom --> loose-envify
+  class scheduler {
+    +version: 0.23.2
+  }
+  scheduler --> loose-envify
+  class loose-envify {
+    +version: 1.4.0
+  }
+  loose-envify --> js-tokens
+  class js-tokens {
+    +version: 9.0.0
+  }

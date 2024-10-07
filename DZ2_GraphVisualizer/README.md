@@ -17,7 +17,6 @@
    ```bash
    pip install requests
    ```
-
 5. Создайте виртуальное окружение (опционально):
    ```bash
    python3 -m venv venv
@@ -59,3 +58,27 @@ py [path]/visualizer.py [config]
 
 - **path** -- Путь до директории с визуализатором,
 - **config** -- Путь до конфигурационного файла.
+
+# Выходные данные
+
+Программа выдаёт два файла в директории проекта:
+
+- **{package_name}_dependency_graph.mmd** -- Текстовая версия графа
+- **{package_name}_dependency_graph.svg** -- Граф в формате svg
+
+### Примеры выходных данных:
+
+Пакет "axios":
+<p align="left">
+  <img src="axios_dependency_graph.svg" width="600" height="400" alt="Dependency Graph">
+</p>
+
+Пакет "react-dom":
+<p align="left">
+  <img src="react-dom_dependency_graph.svg" width="600" height="400" alt="Dependency Graph">
+</p>
+
+Пакет "express":
+<p align="left">
+  <img src="express_dependency_graph.svg" width="600" height="400" alt="Dependency Graph">
+</p>

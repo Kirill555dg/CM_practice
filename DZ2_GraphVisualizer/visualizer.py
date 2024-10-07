@@ -45,6 +45,31 @@ def fetch_package_data(package_name, npm_registry_url):
         return None
 
 
+def is_version_compatible(version, spec):
+    # Преобразуем версию в массив чисел, игнорируя нестандартные элементы
+    version_parts = [int(part) for part in version.split(".") if part.isdigit()]
+    spec = spec.strip()
+
+    # '^' - совместимая мажорная или минорная версия
+    if spec.startswith("^"):
+        base_version = [int(part) for part in spec[1:].split(".") if part.isdigit()]
+        return version_parts >= base_version and version_parts[0] == base_version[0]
+
+    # '~' - совместимая минорная версия
+    elif spec.startswith("~"):
+        base_version = [int(part) for part in spec[1:].split(".") if part.isdigit()]
+        return version_parts >= base_version and version_parts[:2] == base_version[:2]
+
+    # '>=', точная версия и простые версии
+    elif spec.startswith(">="):
+        base_version = [int(part) for part in spec[2:].split(".") if part.isdigit()]
+        return version_parts >= base_version
+
+    # Простой вариант точного совпадения версии
+    else:
+        base_version = [int(part) for part in spec.split(".") if part.isdigit()]
+        return version_parts == base_version
+
 def get_dependencies(package_name, npm_registry_url, depth, max_depth, graph):
     if depth > max_depth:
         return
@@ -53,20 +78,45 @@ def get_dependencies(package_name, npm_registry_url, depth, max_depth, graph):
     if not package_data:
         return
 
-    # Извлекаем зависимости пакета
-    dependencies = package_data.get('versions', {}).get(package_data['dist-tags']['latest'], {}).get('dependencies', {})
-    graph[package_name] = list(dependencies.keys())
+    latest_version = package_data['dist-tags']['latest']
+    dependencies = package_data.get('versions', {}).get(latest_version, {}).get('dependencies', {})
 
-    # Рекурсивно обрабатываем каждую зависимость
-    for dep in dependencies:
-        get_dependencies(dep, npm_registry_url, depth + 1, max_depth, graph)
+    graph[package_name] = {
+        'version': latest_version,
+        'dependencies': {}
+    }
 
+    for dep, version_spec in dependencies.items():
+        dep_data = fetch_package_data(dep, npm_registry_url)
+        if not dep_data:
+            continue
+
+        dep_versions = dep_data.get('versions', {}).keys()
+        suitable_version = None
+        for version in sorted(dep_versions, reverse=True):
+            if is_version_compatible(version, version_spec):
+                suitable_version = version
+                break
+
+        if suitable_version:
+            graph[package_name]['dependencies'][dep] = suitable_version
+            get_dependencies(dep, npm_registry_url, depth + 1, max_depth, graph)
 
 def get_graph(graph):
-    mermaid_syntax = "graph TD;\n"
-    for package, dependencies in graph.items():
-        for dep in dependencies:
-            mermaid_syntax += f"  {package} --> {dep};\n"
+    mermaid_syntax = "classDiagram\n"
+    for package, data in graph.items():
+        # Определяем класс с массивом версий
+        mermaid_syntax += f"  class {package} {{\n"
+        mermaid_syntax += f"    +version: {data['version']}\n"
+        mermaid_syntax += "  }\n"
+
+        # Связи между пакетами
+        for dep in data['dependencies']:
+            if dep in graph:
+                mermaid_syntax += f"  {package} --> {dep}\n"
+            else:
+                print(f"Предупреждение: Зависимость '{dep}' для пакета '{package}' не найдена.")
+
     return mermaid_syntax
 
 
@@ -76,18 +126,19 @@ def save_mermaid_file(content, package_name):
         file.write(content)
     print(f"Mermaid файл сохранен как {file_name} в папке с визуализатором")
 
+
 def generate_mermaid_graph(package_name, mermaid_path):
     input_file = f"{package_name}_dependency_graph.mmd"
-    output_file = f"{package_name}_dependency_graph.png"
+    output_file = f"{package_name}_dependency_graph.svg"
     try:
         call([mermaid_path, "-i", input_file, "-o", output_file])
         print(f"Граф успешно сгенерирован и сохранен как {output_file} в папке с визуализатором")
     except OSError as e:
         print(f"Ошибка при генерации графа: {e}")
 
+
 def main():
     mermaid_path, npm_registry_url, package_name, max_depth = read_config_file()
-    # Получение данных о пакете
     graph = {}
 
     package_data = fetch_package_data(package_name, npm_registry_url)
@@ -96,11 +147,9 @@ def main():
         exit(1)
 
     print(f"Данные о пакете {package_name} успешно получены.")
-    # print(json.dumps(package_data, indent=2))  # Красивый вывод JSON
 
     get_dependencies(package_name, npm_registry_url, 0, max_depth, graph)
-    # print("Граф зависимостей пакета:")
-    # print(json.dumps(graph, indent=2))
+
     mermaid_graph = get_graph(graph)
 
     save_mermaid_file(mermaid_graph, package_name)

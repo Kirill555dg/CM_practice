@@ -1,0 +1,258 @@
+classDiagram
+  class express {
+    +version: 4.21.0
+  }
+  express --> qs
+  express --> depd
+  express --> etag
+  express --> send
+  express --> vary
+  express --> debug
+  express --> fresh
+  express --> cookie
+  express --> accepts
+  express --> methods
+  express --> type-is
+  express --> parseurl
+  express --> statuses
+  express --> encodeurl
+  express --> proxy-addr
+  express --> body-parser
+  express --> escape-html
+  express --> http-errors
+  express --> on-finished
+  express --> safe-buffer
+  express --> utils-merge
+  express --> content-type
+  express --> finalhandler
+  express --> range-parser
+  express --> serve-static
+  express --> array-flatten
+  express --> path-to-regexp
+  express --> setprototypeof
+  express --> cookie-signature
+  express --> merge-descriptors
+  express --> content-disposition
+  class qs {
+    +version: 6.13.0
+  }
+  qs --> side-channel
+  class side-channel {
+    +version: 1.0.6
+  }
+  side-channel --> call-bind
+  side-channel --> es-errors
+  side-channel --> get-intrinsic
+  side-channel --> object-inspect
+  class call-bind {
+    +version: 1.0.7
+  }
+  call-bind --> es-errors
+  call-bind --> get-intrinsic
+  class es-errors {
+    +version: 1.3.0
+  }
+  class get-intrinsic {
+    +version: 1.2.4
+  }
+  get-intrinsic --> es-errors
+  class object-inspect {
+    +version: 1.13.2
+  }
+  class depd {
+    +version: 2.0.0
+  }
+  class etag {
+    +version: 1.8.1
+  }
+  class send {
+    +version: 0.19.0
+  }
+  send --> ms
+  send --> depd
+  send --> etag
+  send --> mime
+  send --> debug
+  send --> fresh
+  send --> destroy
+  send --> statuses
+  send --> encodeurl
+  send --> escape-html
+  send --> http-errors
+  send --> on-finished
+  send --> range-parser
+  class ms {
+    +version: 2.1.3
+  }
+  class mime {
+    +version: 4.0.4
+  }
+  class debug {
+    +version: 4.3.7
+  }
+  debug --> ms
+  class fresh {
+    +version: 0.5.2
+  }
+  class destroy {
+    +version: 1.2.0
+  }
+  class statuses {
+    +version: 2.0.1
+  }
+  class encodeurl {
+    +version: 2.0.0
+  }
+  class escape-html {
+    +version: 1.0.3
+  }
+  class http-errors {
+    +version: 2.0.0
+  }
+  http-errors --> depd
+  http-errors --> inherits
+  http-errors --> setprototypeof
+  http-errors --> statuses
+  http-errors --> toidentifier
+  class inherits {
+    +version: 2.0.4
+  }
+  class setprototypeof {
+    +version: 1.2.0
+  }
+  class toidentifier {
+    +version: 1.0.1
+  }
+  class on-finished {
+    +version: 2.4.1
+  }
+  on-finished --> ee-first
+  class ee-first {
+    +version: 1.1.1
+  }
+  class range-parser {
+    +version: 1.2.1
+  }
+  class vary {
+    +version: 1.1.2
+  }
+  class cookie {
+    +version: 0.7.2
+  }
+  class accepts {
+    +version: 1.3.8
+  }
+  accepts --> mime-types
+  accepts --> negotiator
+  class mime-types {
+    +version: 2.1.35
+  }
+  mime-types --> mime-db
+  class mime-db {
+    +version: 1.53.0
+  }
+  class negotiator {
+    +version: 0.6.3
+  }
+  class methods {
+    +version: 1.1.2
+  }
+  class type-is {
+    +version: 1.6.18
+  }
+  type-is --> mime-types
+  type-is --> media-typer
+  class media-typer {
+    +version: 1.1.0
+  }
+  class parseurl {
+    +version: 1.3.3
+  }
+  class proxy-addr {
+    +version: 2.0.7
+  }
+  proxy-addr --> forwarded
+  proxy-addr --> ipaddr.js
+  class forwarded {
+    +version: 0.2.0
+  }
+  class ipaddr.js {
+    +version: 2.2.0
+  }
+  class body-parser {
+    +version: 1.20.3
+  }
+  body-parser --> qs
+  body-parser --> depd
+  body-parser --> bytes
+  body-parser --> debug
+  body-parser --> unpipe
+  body-parser --> destroy
+  body-parser --> type-is
+  body-parser --> raw-body
+  body-parser --> iconv-lite
+  body-parser --> http-errors
+  body-parser --> on-finished
+  body-parser --> content-type
+  class bytes {
+    +version: 3.1.2
+  }
+  class unpipe {
+    +version: 1.0.0
+  }
+  class raw-body {
+    +version: 3.0.0
+  }
+  raw-body --> bytes
+  raw-body --> http-errors
+  raw-body --> iconv-lite
+  raw-body --> unpipe
+  class iconv-lite {
+    +version: 0.6.3
+  }
+  iconv-lite --> safer-buffer
+  class safer-buffer {
+    +version: 2.1.2
+  }
+  class content-type {
+    +version: 1.0.5
+  }
+  class safe-buffer {
+    +version: 5.2.1
+  }
+  class utils-merge {
+    +version: 1.0.1
+  }
+  class finalhandler {
+    +version: 1.3.1
+  }
+  finalhandler --> debug
+  finalhandler --> encodeurl
+  finalhandler --> escape-html
+  finalhandler --> on-finished
+  finalhandler --> parseurl
+  finalhandler --> statuses
+  finalhandler --> unpipe
+  class serve-static {
+    +version: 1.16.2
+  }
+  serve-static --> encodeurl
+  serve-static --> escape-html
+  serve-static --> parseurl
+  serve-static --> send
+  class array-flatten {
+    +version: 3.0.0
+  }
+  class path-to-regexp {
+    +version: 8.2.0
+  }
+  class cookie-signature {
+    +version: 1.2.1
+  }
+  class merge-descriptors {
+    +version: 2.0.0
+  }
+  class content-disposition {
+    +version: 0.5.4
+  }
+  content-disposition --> safe-buffer
