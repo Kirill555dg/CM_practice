@@ -149,7 +149,7 @@ def main():
     print(f"Данные о пакете {package_name} успешно получены.")
 
     get_dependencies(package_name, npm_registry_url, 0, max_depth, graph)
-
+    print(graph)
     mermaid_graph = get_graph(graph)
 
     save_mermaid_file(mermaid_graph, package_name)
