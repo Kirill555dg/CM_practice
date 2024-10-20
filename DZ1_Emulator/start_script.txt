@@ -1,5 +1,0 @@
-ls
-ls files
-find users/user/home/
-rev files/Text.txt
-date
