@@ -10,6 +10,10 @@
 
 ![image](https://github.com/user-attachments/assets/14f5a594-10a1-45a4-91d9-166765fab5c3)
 
+### Решение:
+
+![image](https://github.com/user-attachments/assets/f629b939-5d12-4ae1-ad6a-1c148c209014)
+
 
 ## Задача 2
 
