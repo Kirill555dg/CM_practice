@@ -19,6 +19,14 @@
 
 Создать локальный git-репозиторий. Задать свои имя и почту (далее – coder1). Разместить файл prog.py с какими-нибудь данными. Прислать в текстовом виде диалог с git.
 
+Решение:
+
+
+![image](https://github.com/user-attachments/assets/b09bec9c-8cdb-4e6e-8bcf-d732ad75165c)
+![image](https://github.com/user-attachments/assets/750acf87-1923-4204-bc35-c3160b2b9304)
+![image](https://github.com/user-attachments/assets/bb06d83e-e83b-439b-991c-2097f68dabd7)
+
+
 ## Задача 3
 
 Создать рядом с локальным репозиторием bare-репозиторий с именем server. Загрузить туда содержимое локального репозитория. Команда git remote -v должна выдать информацию о server! Синхронизировать coder1 с server.
