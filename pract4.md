@@ -74,6 +74,16 @@ Coder2 добавляет в readme в раздел об авторах свою
       first commit
 ```
 
+### Решение:
+
+![image](https://github.com/user-attachments/assets/d140aaea-8bd1-4b91-b53a-283595d7b813)
+![image](https://github.com/user-attachments/assets/beb7bc07-b72f-4f70-9570-a9195308e007)
+![image](https://github.com/user-attachments/assets/d7c62e54-ab3e-4991-97b3-e9ed96571ec9)
+![image](https://github.com/user-attachments/assets/4286e60d-0469-46bc-8f41-4f39f039bbb2)
+![image](https://github.com/user-attachments/assets/682a951a-822f-4fe0-b6f2-1b4e99fc7c56)
+![image](https://github.com/user-attachments/assets/1db3e397-fad2-4dd2-ab7c-9563d2f0d716)
+
+
 ## Задача 4
 
 Написать программу на Питоне (или другом ЯП), которая выводит список содержимого всех объектов репозитория. Воспользоваться командой "git cat-file -p". Идеальное решение – не использовать иных сторонних команд и библиотек для работы с git.
